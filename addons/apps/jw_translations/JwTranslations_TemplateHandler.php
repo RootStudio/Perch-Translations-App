@@ -1,5 +1,7 @@
 <?php
 
+require 'JwTranslations_Util.php';
+
 class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
 {
     /**
@@ -18,6 +20,8 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
      */
     public function render_runtime($html, $Template)
     {
+        $TranslationHelper = JwTranslations_Util::fetch();
+
         if(strpos($html, 'perch:' . $this->tag_mask) !== false) {
 
             $s = '/<perch:'.$this->tag_mask.'\s[^>]*\/>/';
