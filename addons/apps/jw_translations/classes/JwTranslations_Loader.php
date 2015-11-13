@@ -10,6 +10,8 @@ use Dflydev\DotAccessData\Data;
  * Class JwTranslations_Loader
  *
  * Translation utility class
+ *
+ * @author James Wigger <james@rootstudio.co.uk>
  */
 class JwTranslations_Loader
 {
@@ -84,7 +86,7 @@ class JwTranslations_Loader
         $dir_iterator = new RecursiveDirectoryIterator($base_path, FilesystemIterator::SKIP_DOTS);
         $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
 
-        $files = [];
+        $files = array();
 
         foreach ($iterator as $fileinfo) {
             if($fileinfo->getExtension() == 'php') {
@@ -92,14 +94,14 @@ class JwTranslations_Loader
                 $file_path = PerchUtil::file_path($fileinfo->getPathname());
 
                 if($fileinfo->isDir()) {
-                    $path = [$fileinfo->getFilename() => []];
+                    $path = array($fileinfo->getFilename() => array());
                 }
                 else {
-                    $path = [trim($fileinfo->getFilename(), '.php') => $this->load_translation_data($file_path)];
+                    $path = array(trim($fileinfo->getFilename(), '.php') => $this->load_translation_data($file_path));
                 }
 
                 for ($depth = $iterator->getDepth() - 1; $depth >= 0; $depth--) {
-                    $path = [$iterator->getSubIterator($depth)->current()->getFilename() => $path];
+                    $path = array($iterator->getSubIterator($depth)->current()->getFilename() => $path);
                 }
 
                 $files = array_merge_recursive($files, $path);

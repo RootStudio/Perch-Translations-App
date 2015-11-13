@@ -4,6 +4,10 @@ if(!defined('PERCH_TRANSLATION_LANG')) {
     define('PERCH_TRANSLATION_LANG', 'en');
 }
 
+/**
+ * Class JwTranslations_TemplateHandler
+ * @author James Wigger <james@rootstudio.co.uk>
+ */
 class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
 {
     /**
@@ -26,7 +30,7 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
 
             $s = '/<perch:'.$this->tag_mask.'\s[^>]*\/>/';
             $count = preg_match_all($s, $html, $matches, PREG_SET_ORDER);
-            $replacement_tags = [];
+            $replacement_tags = array();
 
             if($count > 0) {
                 foreach($matches as $match) {
@@ -58,10 +62,10 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
 
         $value_string = $TranslationHelper->get_translation($translation_key, $translation_lang, $translation_default_message);
 
-        return [
+        return array(
             'key'   => $translation_key,
             'value' => $this->parse_placeholders($value_string, $Tag)
-        ];
+        );
     }
 
     /**
