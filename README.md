@@ -13,6 +13,10 @@ Example:
 			'categories',
 			'jw_translations'
 		);
+
+To set the site locale, add a new entry into the perch `config.php`:
+
+    define('PERCH_TRANSLATION_LANG', 'en');
 		
 ## Translation Directory
 Translation files should be stored in `perch/translations`. The top level directories inside should be the locales. An example structure could be:
@@ -99,4 +103,4 @@ A full example looks like:
 	
 Setting the third parameter to `true` will return the value rather than output:
 
-	$button_label = get_translation('controls.button.save', array(), true); 
+	$button_label = get_translation('controls.button.save', array(), true);
