@@ -1,0 +1,5 @@
+{
+    "require": {
+        "dflydev/dot-access-data": "^1.0"
+    }
+}

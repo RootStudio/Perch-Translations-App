@@ -1,11 +1,33 @@
-<?php
+<?php require('vendor/autoload.php');
 
+use Dflydev\DotAccessData\Data;
+
+/**
+ * Class JwTranslations_Util
+ *
+ * Translation utility class
+ */
 class JwTranslations_Util
 {
+    /**
+     * Singleton instance
+     *
+     * @var JwTranslations_Util
+     */
     static private $instance;
 
-    private $translations = [];
+    /**
+     * Translation data container
+     *
+     * @var Data
+     */
+    private $translations;
 
+    /**
+     * Singleton loader
+     *
+     * @return JwTranslations_Util
+     */
     public static function fetch()
     {
         if(!isset(self::$instance)) {
@@ -16,45 +38,77 @@ class JwTranslations_Util
         return self::$instance;
     }
 
+    /**
+     * Return a translation string from files using dot notation
+     *
+     * @param $id
+     * @param string $lang
+     * @param null $default
+     * @return array|mixed|null
+     */
+    public function get_translation($id, $lang = 'en', $default = null)
+    {
+        PerchUtil::debug('Using translation: ' . $lang . '.' . $id);
+        return $this->translations->get($lang . '.' . $id, $default);
+    }
+
+    /**
+     * JwTranslations_Util constructor.
+     *
+     * Loads files into memory to avoid disk reads
+     */
     private function __construct()
     {
-        var_dump($this->load_translation_files());
+        $this->translations = $this->load_translation_files();
     }
 
+    /**
+     * Load files from translation directory and converts to dot notation
+     *
+     * @return Data
+     */
     private function load_translation_files()
     {
-        $base_path = PERCH_PATH . '/translations/';
-        $path = PerchUtil::file_path($base_path . '**/*.php');
-//        $files = glob($path);
+        $base_path = PerchUtil::file_path(PERCH_PATH . '/translations/');
+        $dir_iterator = new RecursiveDirectoryIterator($base_path, FilesystemIterator::SKIP_DOTS);
+        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
 
+        $files = [];
 
-        $dir_iterator = new RecursiveDirectoryIterator($base_path);
-        $iterator = new RecursiveIteratorIterator($dir_iterator);
-        $files = new RegexIterator($iterator, '/^.*\.(php)$/i', RegexIterator::GET_MATCH);
+        foreach ($iterator as $fileinfo) {
+            if($fileinfo->getExtension() == 'php') {
 
-        $files_array = [];
+                $file_path = PerchUtil::file_path($fileinfo->getPathname());
 
-        foreach($files as $file) {
-            array_merge($files_array, $file);
+                if($fileinfo->isDir()) {
+                    $path = [$fileinfo->getFilename() => []];
+                }
+                else {
+                    $path = [trim($fileinfo->getFilename(), '.php') => $this->load_translation_data($file_path)];
+                }
+
+                for ($depth = $iterator->getDepth() - 1; $depth >= 0; $depth--) {
+                    $path = [$iterator->getSubIterator($depth)->current()->getFilename() => $path];
+                }
+
+                $files = array_merge_recursive($files, $path);
+            }
         }
 
-        var_dump($files_array);
-
-//        $files = array_map(function($path) use($base_path) {
-//            return str_replace($base_path, '', $path);
-//        }, $files);
-
-        return $files;
+        return new Data($files);;
     }
 
-    private function map_filesystem_to_array($path)
+    /**
+     * Import translation PHP file
+     *
+     * @param $path
+     * @return mixed
+     */
+    private function load_translation_data($path)
     {
-        $files = PerchUtil::get_dir_contents($path);
-
-        if(is_array($files)) {
-            foreach($files as $file) {
-
-            }
+        if(file_exists($path)) {
+            PerchUtil::debug('Loading translation file: ' . $path);
+            return include $path;
         }
     }
 }
