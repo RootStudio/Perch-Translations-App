@@ -1,18 +1,22 @@
-<?php require('vendor/autoload.php');
+<?php
+
+require(PERCH_PATH . '/addons/apps/jw_translations/lib/Dflydev/DotAccessData/Util.php');
+require(PERCH_PATH . '/addons/apps/jw_translations/lib/Dflydev/DotAccessData/DataInterface.php');
+require(PERCH_PATH . '/addons/apps/jw_translations/lib/Dflydev/DotAccessData/Data.php');
 
 use Dflydev\DotAccessData\Data;
 
 /**
- * Class JwTranslations_Util
+ * Class JwTranslations_Loader
  *
  * Translation utility class
  */
-class JwTranslations_Util
+class JwTranslations_Loader
 {
     /**
      * Singleton instance
      *
-     * @var JwTranslations_Util
+     * @var JwTranslations_Loader
      */
     static private $instance;
 
@@ -24,9 +28,16 @@ class JwTranslations_Util
     private $translations;
 
     /**
+     * Translation directory
+     *
+     * @var string
+     */
+    private $translation_dir = 'translations';
+
+    /**
      * Singleton loader
      *
-     * @return JwTranslations_Util
+     * @return JwTranslations_Loader
      */
     public static function fetch()
     {
@@ -49,7 +60,7 @@ class JwTranslations_Util
     public function get_translation($id, $lang = 'en', $default = null)
     {
         PerchUtil::debug('Using translation: ' . $lang . '.' . $id);
-        return $this->translations->get($lang . '.' . $id, $default);
+        return $this->translations->get($lang . '.' . $id, $default ? $default : $id);
     }
 
     /**
@@ -69,7 +80,7 @@ class JwTranslations_Util
      */
     private function load_translation_files()
     {
-        $base_path = PerchUtil::file_path(PERCH_PATH . '/translations/');
+        $base_path = PerchUtil::file_path(PERCH_PATH . '/' . $this->translation_dir);
         $dir_iterator = new RecursiveDirectoryIterator($base_path, FilesystemIterator::SKIP_DOTS);
         $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
 

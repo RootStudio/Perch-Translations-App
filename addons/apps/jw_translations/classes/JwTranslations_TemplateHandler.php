@@ -1,7 +1,5 @@
 <?php
 
-require 'JwTranslations_Util.php';
-
 if(!defined('PERCH_TRANSLATION_LANG')) {
     define('PERCH_TRANSLATION_LANG', 'en');
 }
@@ -49,9 +47,9 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
      * @param $opening_tag
      * @return array
      */
-    public function parse_tags($opening_tag)
+    private function parse_tags($opening_tag)
     {
-        $TranslationHelper = JwTranslations_Util::fetch();
+        $TranslationHelper = JwTranslations_Loader::fetch();
         $Tag = new PerchXMLTag($opening_tag);
 
         $translation_key = $Tag->id();
@@ -60,6 +58,21 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
 
         $value_string = $TranslationHelper->get_translation($translation_key, $translation_lang, $translation_default_message);
 
+        return [
+            'key'   => $translation_key,
+            'value' => $this->parse_placeholders($value_string, $Tag)
+        ];
+    }
+
+    /**
+     * Parses placeholder attributes from tag
+     *
+     * @param string $value_string
+     * @param PerchXMLTag $Tag
+     * @return string
+     */
+    private function parse_placeholders($value_string, PerchXMLTag $Tag)
+    {
         $s = '/:\w+/';
         $count = preg_match_all($s, $value_string, $matches, PREG_SET_ORDER);
 
@@ -75,9 +88,6 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
             }
         }
 
-        return [
-            'key'   => $translation_key,
-            'value' => $value_string
-        ];
+        return $value_string;
     }
 }
