@@ -30,7 +30,7 @@ The translation files are plain PHP files that return an array. For example, a t
 	<?php return array(
 	    'buttons' => array(
 	        'save'    => 'Save Post',
-	        'payment' => 'Submit Payment'
+	        'payment' => 'Submit Payment',
 	        'delete'  => 'Delete Post'
 	    )
 	);
