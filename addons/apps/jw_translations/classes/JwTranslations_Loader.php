@@ -97,7 +97,7 @@ class JwTranslations_Loader
                     $path = array($fileinfo->getFilename() => array());
                 }
                 else {
-                    $path = array(trim($fileinfo->getFilename(), '.php') => $this->load_translation_data($file_path));
+                    $path = array(PerchUtil::strip_file_extension($fileinfo->getFilename()) => $this->load_translation_data($file_path));
                 }
 
                 for ($depth = $iterator->getDepth() - 1; $depth >= 0; $depth--) {
