@@ -61,7 +61,7 @@ class JwTranslations_Loader
      */
     public function get_translation($id, $lang = 'en', $default = null)
     {
-        PerchUtil::debug('Using translation: ' . $lang . '.' . $id);
+        PerchUtil::debug('Using translation: ' . $lang . '.' . $id, 'success');
         return $this->translations->get($lang . '.' . $id, $default ? $default : $id);
     }
 
@@ -120,7 +120,7 @@ class JwTranslations_Loader
     private function load_translation_data($path)
     {
         if(file_exists($path)) {
-            PerchUtil::debug('Loading translation file: ' . $path);
+            PerchUtil::debug('Loading translation file: ' . $path, 'template');
             return include $path;
         }
     }

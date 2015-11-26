@@ -33,10 +33,26 @@ class JwTranslations_TemplateHandler extends PerchAPI_TemplateHandler
             $replacement_tags = array();
 
             if($count > 0) {
+
+                // Increment unique ID on tags
+                $increment = 1;
                 foreach($matches as $match) {
                     $output = $this->parse_tags($match[0]);
-                    $replacement_tags[$output['key']] = $output['value'];
+                    $replacement_tags[$output['key'] . '#' . $increment] = $output['value'];
+
+                    $increment++;
                 }
+
+                // Rewrite template IDs for unique strings
+                $html = preg_replace_callback($s, function($matches) {
+                    foreach($matches as $match) {
+                        static $counter = 0;
+                        $counter++;
+
+                        $Tag = new PerchXMLTag($match);
+                        return str_replace($Tag->id(), $Tag->id() . '#' . $counter, $match);
+                    }
+                }, $html);
             }
 
             $html = $Template->replace_content_tags($this->tag_mask, $replacement_tags, $html);
